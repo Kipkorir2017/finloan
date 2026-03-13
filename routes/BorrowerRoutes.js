@@ -1,17 +1,23 @@
 const express = require("express");
 const router = express.Router();
-const borrowerController = require("../controllers/borrowerController");
+const borrowerController = require("../controllers/BorrowerController");
 
-// Get all borrowers
+// Active borrowers
+router.get("/active", borrowerController.getActiveBorrowers);
+
+// All borrowers
 router.get("/", borrowerController.getAllBorrowers);
 
-// Get single borrower by ID
+// Single borrower
 router.get("/:id", borrowerController.getBorrowerById);
 
-// Add new borrower
+// Create borrower
 router.post("/", borrowerController.createBorrower);
 
-// Update status and notes
-router.patch("/:id", borrowerController.updateBorrowerStatus);
+// Update status / notes
+router.patch("/:id/status", borrowerController.updateStatus);
+
+// Mark repayment
+router.patch("/:id/repay", borrowerController.markRepayment);
 
 module.exports = router;
