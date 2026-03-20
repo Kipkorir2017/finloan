@@ -15,7 +15,8 @@ router.get("/:id", borrowerController.getBorrowerById);
 router.post("/", borrowerController.createBorrower);
 
 // Update status / notes
-router.patch("/:id/status", borrowerController.updateStatus);
+// router.patch("/:id/status", borrowerController.updateStatus);
+router.put("/:id", borrowerController.updateStatus);
 
 // Mark repayment
 router.patch("/:id/repay", borrowerController.markRepayment);
