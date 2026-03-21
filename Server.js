@@ -7,14 +7,10 @@ const userRoutes = require("./routes/userRoutes");
 require("dotenv").config();
 
 const app = express();
-const PORT = process.env.PORT;
-
-console.log("MONGO_URI:", process.env.MONGO_URI);
+const PORT = process.env.PORT || 5000;
 
 const allowedOrigins = [
-
   "http://localhost:3000",
-  // "http://localhost:5000",
   "https://kipkorir2017.github.io",
   "https://stately-travesseiro-756804.netlify.app"
 ];
@@ -22,7 +18,6 @@ const allowedOrigins = [
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
-
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     } else {
@@ -35,7 +30,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+app.options("/*", cors(corsOptions));
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
@@ -50,7 +45,7 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB connected successfully");
-    app.listen(PORT,"0.0.0.0", () => {
+    app.listen(PORT, "0.0.0.0", () => {
       console.log(`Server running on port ${PORT}`);
     });
   })
