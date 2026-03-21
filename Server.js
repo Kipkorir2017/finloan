@@ -12,7 +12,9 @@ const PORT = process.env.PORT;
 console.log("MONGO_URI:", process.env.MONGO_URI);
 
 const allowedOrigins = [
+
   "http://localhost:3000",
+  // "http://localhost:5000",
   "https://kipkorir2017.github.io",
   "https://stately-travesseiro-756804.netlify.app"
 ];
@@ -48,7 +50,7 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB connected successfully");
-    app.listen(PORT, () => {
+    app.listen(PORT,"0.0.0.0", () => {
       console.log(`Server running on port ${PORT}`);
     });
   })
