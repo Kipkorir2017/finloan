@@ -9,10 +9,10 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Debug
+
 console.log("MONGO_URI:", process.env.MONGO_URI);
 
-// Allowed frontend origins
+// Allowed frontend origin
 const allowedOrigins = [
   "https://kipkorir2017.github.io"
 ];
@@ -21,7 +21,6 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow tools like Postman or server-to-server requests
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
@@ -35,8 +34,13 @@ app.use(
   })
 );
 
-// Handle preflight requests
-app.options("*", cors());
+// Handle preflight requests (safe handling)
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    return cors()(req, res, next);
+  }
+  next();
+});
 
 // Middleware
 app.use(express.json());
