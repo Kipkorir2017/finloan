@@ -9,38 +9,22 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-
+// Debug
 console.log("MONGO_URI:", process.env.MONGO_URI);
 
-// Allowed frontend origin
-const allowedOrigins = [
-  "https://kipkorir2017.github.io"
-];
-
 // CORS configuration
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
+const corsOptions = {
+  origin: "https://kipkorir2017.github.io",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        return callback(new Error("Not allowed by CORS"));
-      }
-    },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    credentials: true,
-  })
-);
+// Apply CORS globally
+app.use(cors(corsOptions));
 
-// Handle preflight requests (safe handling)
-app.use((req, res, next) => {
-  if (req.method === "OPTIONS") {
-    return cors()(req, res, next);
-  }
-  next();
-});
+// Handle preflight requests
+app.options("*", cors(corsOptions));
 
 // Middleware
 app.use(express.json());
