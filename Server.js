@@ -9,7 +9,6 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-
 console.log("MONGO_URI:", process.env.MONGO_URI);
 
 // CORS configuration
@@ -20,8 +19,11 @@ const corsOptions = {
   credentials: true,
 };
 
-// Apply CORS globally
+// ✅ Apply CORS FIRST (very important)
 app.use(cors(corsOptions));
+
+// ✅ Handle preflight requests explicitly
+app.options("*", cors(corsOptions));
 
 // Middleware
 app.use(express.json());
