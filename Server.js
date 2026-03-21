@@ -32,7 +32,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("/*", cors(corsOptions));
+// Use a Regex to avoid Path-to-Regexp "Missing Parameter Name" errors
+app.options(/(.*)/, cors(corsOptions));
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
