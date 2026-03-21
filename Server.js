@@ -7,21 +7,18 @@ const userRoutes = require("./routes/userRoutes");
 require("dotenv").config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 console.log("MONGO_URI:", process.env.MONGO_URI);
 
-// ✅ Allowed origins (add all your frontends here)
 const allowedOrigins = [
   "http://localhost:3000",
   "https://kipkorir2017.github.io",
   "https://stately-travesseiro-756804.netlify.app"
 ];
 
-// ✅ CORS configuration
 const corsOptions = {
   origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps or curl)
     if (!origin) return callback(null, true);
 
     if (allowedOrigins.includes(origin)) {
@@ -35,18 +32,18 @@ const corsOptions = {
   credentials: true,
 };
 
-
 app.use(cors(corsOptions));
-
-// Middleware
+app.options("*", cors(corsOptions));
 app.use(express.json());
 
-// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/borrowers", borrowerRoutes);
 app.use("/api/users", userRoutes);
 
-// MongoDB connection
+app.get("/", (req, res) => {
+  res.send("API is running");
+});
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
