@@ -19,11 +19,10 @@ const corsOptions = {
   credentials: true,
 };
 
-// ✅ Apply CORS FIRST (very important)
 app.use(cors(corsOptions));
 
-// ✅ Handle preflight requests explicitly
-app.options("*", cors(corsOptions));
+
+app.use(cors(corsOptions));
 
 // Middleware
 app.use(express.json());
