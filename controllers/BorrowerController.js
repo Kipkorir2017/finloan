@@ -138,10 +138,7 @@
 
 const Borrower = require("../models/Borrower");
 
-// ❌ REMOVE mutation from GET routes
-// (status reset should NOT happen during reads)
 
-// GET all active borrowers (balance > 0)
 exports.getActiveBorrowers = async (req, res) => {
   try {
     const borrowers = await Borrower.find({ balance: { $gt: 0 } }).sort({ createdAt: -1 });
@@ -244,7 +241,7 @@ exports.markRepayment = async (req, res) => {
     const borrower = await Borrower.findById(req.params.id);
     if (!borrower) return res.status(404).json({ message: "Borrower not found" });
 
-    borrower.balance -= amountPaid;
+    borrower.balance -=Number(amountPaid); 
 
     if (borrower.borrowHistory.length > 0) {
       const lastBorrow = borrower.borrowHistory[borrower.borrowHistory.length - 1];
