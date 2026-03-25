@@ -10,7 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 const allowedOrigins = [
-  // "http://localhost:3000",
+  "http://localhost:3000",
   "http://localhost:5000",
   "https://kipkorir2017.github.io",
   "https://stately-travesseiro-756804.netlify.app"
@@ -28,8 +28,8 @@ const corsOptions = {
   credentials: true
 };
 
-// app.options(/(.*)/, cors(corsOptions));
-app.use(cors());
+app.options(/(.*)/, cors(corsOptions));
+// app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
