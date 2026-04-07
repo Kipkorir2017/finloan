@@ -1,86 +1,94 @@
-// const mongoose = require("mongoose");
 
-// // Subdocument schema for borrow history
-// const BorrowHistorySchema = new mongoose.Schema({
-//   amount: { type: Number, required: true },
-//   dateBorrowed: { type: Date, default: Date.now },
-//   dateCleared: { type: Date },
-//   status: { type: String, enum: ["Active", "Cleared"], default: "Active" },
-// });
-
-// // Main Borrower schema
-// const BorrowerSchema = new mongoose.Schema(
-//   {
-//     name: { type: String, required: true },
-//     customerID: { type: Number, required: true, unique: true },
-//     phone: { type: String, required: true },
-//     dob: { type: Date, required: true },
-//     email: { type: String },
-//     refereeName: { type: String },
-//     refereePhone: { type: String },
-//     balance: { type: Number, default: 0 },
-//     borrowHistory: { type: [BorrowHistorySchema], default: [] },
-//     totalTimesBorrowed: { type: Number, default: 0 },
-//     tags: [{ type: String }],
-//     status: { type: String, enum: ["Called", "Unreachable", null], default: null },
-//     statusUpdatedAt: { type: Date }, 
-//     notes: { type: String, default: "" }, 
-//   },
-//   { timestamps: true }
-// );
-
-// module.exports = mongoose.model("Borrower", BorrowerSchema);
 
 const mongoose = require("mongoose");
 
-// Subdocument schema for borrow history
 const BorrowHistorySchema = new mongoose.Schema({
   amount: { type: Number, required: true },
+
+  
   dateBorrowed: { type: Date, default: Date.now },
+
+  dueDate: { type: Date, required: true },
   dateCleared: { type: Date },
-  status: { type: String, enum: ["Active", "Cleared"], default: "Active" },
+
+  status: {
+    type: String,
+    enum: ["Pending", "Active", "Rejected", "Overdue", "Cleared"],
+    default: "Pending",
+  },
+
+  contactStatus: {
+    type: String,
+    enum: ["Called", "Unreachable", null],
+    default: null,
+  },
+
+  contactUpdatedAt: { type: Date },
+
+  //Interest amount (KES value)
+  interest: { type: Number, default: 0 },
+
+  // NEW: Interest rate (0.15, 0.2, 0.25)
+  interestRate: { type: Number },
+
+  // NEW: Amount customer actually receives
+  netDisbursed: { type: Number },
+
+  // For future daily penalty logic
+  lastInterestAppliedAt: { type: Date },
+
+  repayments: [
+    {
+      amount: { type: Number, required: true },
+      date: { type: Date, default: Date.now },
+    },
+  ],
+
+  notes: [
+    {
+      text: String,
+      date: { type: Date, default: Date.now },
+      agent: String,
+    },
+  ],
 });
 
-// Main Borrower schema
 const BorrowerSchema = new mongoose.Schema(
   {
-    // 🔹 Personal Details (UPDATED)
-    firstName: { type: String, required: true },
-    middleName: { type: String },
-    lastName: { type: String, required: true },
-
-    nationalId: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
+    nationalId: { type: Number, required: true, unique: true },
     phone: { type: String, required: true },
-    altPhoneNumber: { type: String },
-    location: { type: String },
+    altPhoneNumber: String,
+    location: String,
+    refereeName: String,
+    refereePhone: String,
+    email: String,
+    dob: Date,
 
-    // 🔹 Referees
-    referee1Name: { type: String },
-    referee1Phone: { type: String },
-    referee2Name: { type: String },
-    referee2Phone: { type: String },
-
-    // 🔹 Photos (KYC)
-    facePhoto: { type: String },
-    idPhoto: { type: String },
-
-    // 🔹 Optional existing fields
-    customerID: { type: Number, unique: true },
-    dob: { type: Date },
-    email: { type: String },
-
-    // 🔹 Loan Tracking
+    // This represents amount OWED (not disbursed)
     balance: { type: Number, default: 0 },
+
     borrowHistory: { type: [BorrowHistorySchema], default: [] },
+
     totalTimesBorrowed: { type: Number, default: 0 },
 
-    // 🔹 Metadata
-    tags: [{ type: String }],
-    status: { type: String, enum: ["Called", "Unreachable", null], default: null },
-    statusUpdatedAt: { type: Date },
-    notes: { type: String, default: "" },
+    // Used for risk tagging later
+    tags: [{ type: String }], // e.g. ["Risk", "Defaulter"]
+
+    notes: [
+      {
+        text: String,
+        date: { type: Date, default: Date.now },
+        agent: String,
+      },
+    ],
   },
   { timestamps: true }
 );
+
+//  INDEXES 
+BorrowerSchema.index({ "borrowHistory.status": 1 });
+BorrowerSchema.index({ "borrowHistory.dueDate": 1 });
+BorrowerSchema.index({ "borrowHistory.dateBorrowed": 1 });
 
 module.exports = mongoose.model("Borrower", BorrowerSchema);

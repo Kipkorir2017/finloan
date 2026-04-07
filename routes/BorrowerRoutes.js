@@ -1,24 +1,26 @@
 const express = require("express");
 const router = express.Router();
 const borrowerController = require("../controllers/BorrowerController");
+const authMiddleware = require("../middleware/authMiddleware");
+const authorize = require("../middleware/roleMiddleware");
 
-// Active borrowers
-router.get("/active", borrowerController.getActiveBorrowers);
+// Loan views
+router.get("/loans/active", borrowerController.getActiveLoans);
+router.get("/loans/due", borrowerController.getDueLoans);
+router.get("/loans/overdue", borrowerController.getOverdueLoans);
 
-// All borrowers
+// Borrower CRUD
+router.post("/", borrowerController.createBorrower);
 router.get("/", borrowerController.getAllBorrowers);
-
-// Single borrower
+router.get("/risk", borrowerController.getRiskCustomers);
 router.get("/:id", borrowerController.getBorrowerById);
 
-// Create borrower
-router.post("/", borrowerController.createBorrower);
+// Actions
+router.put("/:id/contact-status", borrowerController.updateStatus);
+router.put("/:id/repayment", borrowerController.markRepayment);
 
-// Update status / notes
-// router.patch("/:id/status", borrowerController.updateStatus);
-router.put("/:id", borrowerController.updateStatus);
-
-// Mark repayment
-router.patch("/:id/repay", borrowerController.markRepayment);
+// Approve / Reject loans (Admin only)
+router.put("/:id/approve", authMiddleware, authorize("admin"), borrowerController.approveLoan);
+router.put("/:id/reject", authMiddleware, authorize("admin"), borrowerController.rejectLoan);
 
 module.exports = router;
